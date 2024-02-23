@@ -1,20 +1,20 @@
 import createError from "http-errors";
 import express from "express";
-import { JSONFilePreset } from "lowdb";
+import { JSONFilePreset } from "lowdb/node";
 
-global.db; (async() => db = await JSONFilePreset('db.json', {values: []}))();
+(async() => global.db = await JSONFilePreset('db.json', {values: []}))();
 
-import sensorRouter from "./routes/sensor";
-import historyRouter from "./routes/history";
+import sensorRouter from "./routes/sensor.js";
+import historyRouter from "./routes/history.js";
 
 let app = express();
 
-app.set("views", __dirname + "/views");
+app.set("views", process.cwd() + "/views");
 app.set("view engine", "ejs");
 
 app.use(express.json({ type: ["application/json"] }))
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(process.cwd() + "/public"));
 
 app.use("/sensor", sensorRouter);
 app.use("/history", historyRouter);
