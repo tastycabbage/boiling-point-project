@@ -5,36 +5,71 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script src="https://api-maps.yandex.ru/v3/?apikey=6793b250-efcb-4991-a383-507344ce553d&lang=ru_RU"></script>
     <script>
+        const config = {
+            mapCenter: [38.936694, 47.208736],
+            duration: 1000,
+            defaultZoom: 14
+        }
+        
         initMap();
 
         async function initMap() {
             await ymaps3.ready;
+          
             const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer} = ymaps3;
             const {YMapDefaultMarker} = await ymaps3.import('@yandex/ymaps3-markers@0.0.1');
 
             const map = new YMap(
                 document.getElementById('map'),
-                { location: { center: [38.936694, 47.208736], zoom: 10 } },
+                { location: { center: config.mapCenter, zoom: config.defaultZoom } },
                 [new YMapDefaultSchemeLayer({}), new YMapDefaultFeaturesLayer({})]
-            );
+            )
+            map.setBehaviors(["drag"]);
 
-            let parsedData = <%- JSON.stringify(data) %>,
+            let parsedData = <%- JSON.stringify(data).replace(/"|"/g, "") %>,
                 parsedDate = new Date(parsedData["timestamp"]),
                 dateString = `${parsedDate.getDate()}/${parsedDate.getMonth() + 1}/${parsedDate.getFullYear()} ${parsedDate.getHours()}:${parsedDate.getMinutes()}:${parsedDate.getSeconds()}`;
 
-            const contentElement = document.createElement("div");
-
-            map.addChild(new YMapDefaultMarker(
+            let marker = new YMapDefaultMarker(
                 {
                     coordinates: [parsedData["lng"], parsedData["lat"]],
                     popup: 
                     {
-                        content: `Загрязненность: ${parsedData["tds"]} ppm\nТемпература: ${parsedData["temp"]} C\nВремя создания: ${dateString}`,
+                        content: `Загрязненность: ${parsedData["tds"]} ppm<br>Температура: ${parsedData["temp"]} C<br>Время создания: ${dateString}`,
                         position: "right" 
                     }
                 }
-            ));
+            )
+            
+            let degree = 0, rotateInt;
+            marker._container.onclick = () => {
+                changeMapPosition({ center: [parsedData["lng"], parsedData["lat"]], zoom: 18 }, { azimuth: 0, tilt: (45 * Math.PI) / 180 });
+                map.setBehaviors([]);
+              
+                setTimeout(() => {
+                    degree = 0;
+                    rotateInt = setInterval(() => {
+                        map.update({ location: {}, camera: { azimuth: degree / 2500 } })
+                        degree++;
+                    })
+                }, config.duration)
+            }
+            
+            marker._popup.lastChild.onclick = () => {
+                marker._togglePopup();
+                clearInterval(rotateInt);
+              
+                changeMapPosition({ center: config.mapCenter, zoom: config.defaultZoom }, { azimuth: 0, tilt: 0 });
+                map.setBehaviors(["drag"]);
+            }
+          
+            map.addChild(marker);
+          
+            function changeMapPosition(location, camera) {
+                map.update({ location: { ...location, duration: config.duration }, camera });
+            }
         }
+      
     </script>
   </head>
   <body>
