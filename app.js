@@ -5,7 +5,6 @@ import { JSONFilePreset } from "lowdb/node";
 (async() => global.db = await JSONFilePreset('db.json', {values: []}))();
 
 import sensorRouter from "./routes/sensor.js";
-import historyRouter from "./routes/history.js";
 
 let app = express();
 
@@ -17,7 +16,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(process.cwd() + "/public"));
 
 app.use("/sensor", sensorRouter);
-app.use("/history", historyRouter);
 
 app.use((req, res, next) => {
     next(createError(404));

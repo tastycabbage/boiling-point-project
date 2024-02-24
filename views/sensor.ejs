@@ -3,12 +3,41 @@
   <head>
     <title>Sensor Data</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://api-maps.yandex.ru/v3/?apikey=6793b250-efcb-4991-a383-507344ce553d&lang=ru_RU"></script>
+    <script>
+        initMap();
+
+        async function initMap() {
+            await ymaps3.ready;
+            const {YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer} = ymaps3;
+            const {YMapDefaultMarker} = await ymaps3.import('@yandex/ymaps3-markers@0.0.1');
+
+            const map = new YMap(
+                document.getElementById('map'),
+                { location: { center: [38.936694, 47.208736], zoom: 10 } },
+                [new YMapDefaultSchemeLayer({}), new YMapDefaultFeaturesLayer({})]
+            );
+
+            let parsedData = <%- JSON.stringify(data) %>,
+                parsedDate = new Date(parsedData["timestamp"]),
+                dateString = `${parsedDate.getDate()}/${parsedDate.getMonth() + 1}/${parsedDate.getFullYear()} ${parsedDate.getHours()}:${parsedDate.getMinutes()}:${parsedDate.getSeconds()}`;
+
+            const contentElement = document.createElement("div");
+
+            map.addChild(new YMapDefaultMarker(
+                {
+                    coordinates: [parsedData["lng"], parsedData["lat"]],
+                    popup: 
+                    {
+                        content: `Загрязненность: ${parsedData["tds"]} ppm\nТемпература: ${parsedData["temp"]} C\nВремя создания: ${dateString}`,
+                        position: "right" 
+                    }
+                }
+            ));
+        }
+    </script>
   </head>
   <body>
-    <h2>Последняя информация</h1>
-    <div id="tds-meter">Загрязненность: <%= tds %> % (<%= tdsraw %> ppm)</div>
-    <div id="temperature">Температура: <%= temp %> C</div>
-    <div id="latitude">Широта: <%= lat %></div>
-    <div id="longitude">Долгота: <%= lng %></div>
+    <div id="map"></div>
   </body>
 </html>

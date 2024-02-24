@@ -4,7 +4,7 @@ const router = Router();
 router.get('/', async (req, res, next) => {
     await db.read();
     let sensorData = db.data.values.at(-1);
-    res.render("sensor", { temp: sensorData.temp, tds: (sensorData.tds / 1000) * 100, tdsraw: sensorData.tds, lng: sensorData.lng, lat: sensorData.lat });
+    res.render("sensor", { data: sensorData });
 });
 
 router.post("/", async (req, res, next) => {
