@@ -4,10 +4,52 @@ html, body {
     height: 100%;
 }
 
-#map {
+.map {
     height: 100%;
 }
 
-a {
-    color: #00B7FF;
+.horizontal-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.dates {
+  display: flex;
+}
+
+.date-btn {
+  padding: 5px 10px;
+  margin: 0 5px;
+  background-color: #ccc;
+  border: none;
+  cursor: pointer;
+}
+
+.prev-btn,
+.next-btn {
+  padding: 5px 10px;
+  background-color: #ccc;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5em;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.prev-btn:hover,
+.next-btn:hover {
+  color: #333;
+}
+
+.date-btn.selected {
+  background-color: #ffcc00;
 }

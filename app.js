@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(process.cwd() + "/public"));
 
 app.use("/sensor", sensorRouter);
+app.use("/database", express.static("./db.json"));
 
 app.use((req, res, next) => {
     next(createError(404));
