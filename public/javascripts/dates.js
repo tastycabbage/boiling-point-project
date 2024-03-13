@@ -1,49 +1,47 @@
-const prevBtn = document.querySelector(".prev-btn");
-const nextBtn = document.querySelector(".next-btn");
-const datesContainer = document.querySelector(".dates");
-const dateButtons = document.querySelectorAll(".date-btn");
+const navDates = document.querySelectorAll(".nav-date");
+const prevButton = document.querySelector(".prev");
+const nextButton = document.querySelector(".next");
+const navDateActive = document.querySelector(".nav-date.active");
+
 let currentIndex = 0;
 
-prevBtn.addEventListener("click", function() {
+prevButton.addEventListener("click", () => {
   if (currentIndex > 0) {
     currentIndex--;
-    updateSelectedDate();
-    scrollToCenter();
+    selectButton();
+    
+    scrollTo(navDates[currentIndex]);
   }
 });
 
-nextBtn.addEventListener("click", function() {
-  if (currentIndex < dateButtons.length - 1) {
+nextButton.addEventListener("click", () => {
+  if (currentIndex < navDates.length - 1) {
     currentIndex++;
-    updateSelectedDate();
-    scrollToCenter();
+    selectButton();
+    
+    scrollTo(navDates[currentIndex]);
   }
 });
 
-dateButtons.forEach(function(button, index) {
-  button.addEventListener("click", function() {
+navDates.forEach((button, index) => {
+  button.addEventListener("click", () => {
     currentIndex = index;
-    updateSelectedDate();
-    scrollToCenter();
+    selectButton();
+
+    scrollTo(button);
   });
 });
 
-function updateSelectedDate() {
-  dateButtons.forEach(function(button, index) {
+function selectButton() {
+  navDates.forEach((button, index) => {
     if (index === currentIndex) {
-      button.classList.add("selected");
+      button.classList.add("active");
     } else {
-      button.classList.remove("selected");
+      button.classList.remove("active");
     }
   });
 }
 
-function scrollToCenter() {
-  const selectedButton = dateButtons[currentIndex];
-  const containerRect = datesContainer.getBoundingClientRect();
-  const buttonRect = selectedButton.getBoundingClientRect();
-  const offsetLeft = buttonRect.left - containerRect.left;
-  const offsetRight = containerRect.width - offsetLeft - buttonRect.width;
-  const scrollLeft = offsetLeft - (containerRect.width - buttonRect.width) / 2;
-  datesContainer.scrollLeft += scrollLeft;
+function scrollTo(element) {
+  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }

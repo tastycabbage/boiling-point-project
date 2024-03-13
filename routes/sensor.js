@@ -3,8 +3,8 @@ const router = Router();
 
 router.get('/', async (req, res, next) => {
     await db.read();
-    let sensorData = db.data.values.at(-1);
-    res.render("sensor", { data: sensorData });
+    let sensorData = db.data.values;
+    res.render("sensor", { dates: sensorData });
 });
 
 router.post("/", async (req, res, next) => {
