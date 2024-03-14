@@ -1,25 +1,64 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Sensor Data</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src="https://api-maps.yandex.ru/v3/?apikey=6793b250-efcb-4991-a383-507344ce553d&lang=ru_RU"></script>
-    <script src="javascripts/map.js"></script>
-    <script src="javascripts/dragscroll.js"></script>
-  </head>
-  <body>
-    <div class="map"></div>
-    
-    <div class="nav-button prev">&lt;</div>
-    <div class="navigation dragscroll">
-      <div class="dates">
-        <% dates.forEach(date => { %>
-          <div class="nav-date"><%= date %></div>
-        <% }) %>
-      </div>
-    </div>
-    <div class="nav-button next">&gt;</div>
-    
-  <script src="javascripts/dates.js"></script>
-  </body>
+    <head>
+        <title>Sensor Data</title>
+        <link rel='stylesheet' href='/stylesheets/style.css' />
+        <script src="https://api-maps.yandex.ru/v3/?apikey=6793b250-efcb-4991-a383-507344ce553d&lang=ru_RU"></script>
+        <script src="javascripts/map.js"></script>
+        <script src="javascripts/dragScroll.js"></script>
+    </head>
+    <body>
+        <div class="map"></div>
+
+        <div>
+          <div class="nav-button month prev">&lt;</div>
+          <div class="month-nav dragscroll">
+              <div class="months">
+                  <% let names = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]; %>
+                  <% let months = new Set(); %>
+                    
+                  <% data.forEach(val => { %>
+                      <% months.add(val.createdAt.month); %>
+                  <% }) %>
+                    
+                  <% [0,1,2,3,4,5,6,7,8,9,10,11].forEach(monthNumber => {  %>
+                      <div class="selector month"><%= names[monthNumber] %></div>
+                  <% }) %>
+              </div>
+          </div>
+          <div class="nav-button month next">&gt;</div>
+        </div>
+                    
+        <div>
+          <div class="nav-button day prev">&lt;</div>
+          <div class="day-nav dragscroll">
+              <div class="days" data-now="0">
+                  <% let days = new Set(); %>
+                    
+                  <% data.filter(el => el.createdAt.month == 1).forEach(val => { %>
+                      <% days.add(val.createdAt.day); %>
+                  <% }) %>
+                    
+                  <% days.forEach(dayNumber => {  %>
+                      <div class="selector day"><%= dayNumber %></div>
+                  <% }) %>
+              </div>
+          </div>
+          <div class="nav-button day next">&gt;</div>
+        </div>
+                    
+        <script src="javascripts/monthSelector.js"></script>
+        <script src="javascripts/daySelector.js"></script>
+        
+        <script>
+            let month = document.querySelector(".months").lastElementChild,
+                day = document.querySelector(".days").lastElementChild;
+          
+            month.classList.add("active");
+            day.classList.add("active");
+            
+            scrollToMonth(month);
+            scrollToDay(day);
+        </script>
+    </body>
 </html>

@@ -3,12 +3,25 @@ const router = Router();
 
 router.get('/', async (req, res, next) => {
     await db.read();
-    let sensorData = db.data.values;
-    res.render("sensor", { dates: sensorData });
+
+    res.render("sensor", { data: db.data.values });
 });
 
 router.post("/", async (req, res, next) => {
-    req.body["timestamp"] = Date.now();
+    let reqTime = Date.now();
+    let now = new Date(reqTime);
+    
+    req.body["timestamp"] = reqTime;
+
+    req.body["createdAt"] = {};
+    req.body["createdAt"]["day"] = now.getDate();
+    req.body["createdAt"]["month"] = now.getMonth();
+    req.body["createdAt"]["year"] = now.getFullYear();
+    req.body["createdAt"]["hours"] = now.getHours();
+    req.body["createdAt"]["minutes"] = now.getMinutes();
+    req.body["createdAt"]["seconds"] = now.getSeconds();
+    req.body["createdAt"]["milliseconds"] = now.getMilliseconds();
+
     await db.update(({ values }) => values.push(req.body));
     
     console.log(req.body);
