@@ -11,54 +11,49 @@
         <div class="map"></div>
 
         <div>
-          <div class="nav-button month prev">&lt;</div>
-          <div class="month-nav dragscroll">
-              <div class="months">
-                  <% let names = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]; %>
-                  <% let months = new Set(); %>
-                    
-                  <% data.forEach(val => { %>
-                      <% months.add(val.createdAt.month); %>
-                  <% }) %>
-                    
-                  <% [0,1,2,3,4,5,6,7,8,9,10,11].forEach(monthNumber => {  %>
-                      <div class="selector month"><%= names[monthNumber] %></div>
-                  <% }) %>
-              </div>
-          </div>
-          <div class="nav-button month next">&gt;</div>
+            <div class="nav-button month prev">&lt;</div>
+            <div class="month-nav dragscroll">
+                <div class="months">
+                    <% let names = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]; %>
+                    <% let months = new Set(); %>
+                        
+                    <% data.forEach(val => { %>
+                        <% months.add(val.createdAt.month); %>
+                    <% }) %>
+                        
+                    <% months.forEach(monthNumber => {  %>
+                        <div class="selector month"><%= names[monthNumber] %></div>
+                    <% }) %>
+                </div>
+            </div>
+            <div class="nav-button month next">&gt;</div>
         </div>
                     
         <div>
-          <div class="nav-button day prev">&lt;</div>
-          <div class="day-nav dragscroll">
-              <div class="days" data-now="0">
-                  <% let days = new Set(); %>
-                    
-                  <% data.filter(el => el.createdAt.month == 1).forEach(val => { %>
-                      <% days.add(val.createdAt.day); %>
-                  <% }) %>
-                    
-                  <% days.forEach(dayNumber => {  %>
-                      <div class="selector day"><%= dayNumber %></div>
-                  <% }) %>
-              </div>
-          </div>
-          <div class="nav-button day next">&gt;</div>
+            <div class="nav-button day prev">&lt;</div>
+            <div class="day-nav dragscroll">
+                <div class="days"></div>
+            </div>
+            <div class="nav-button day next">&gt;</div>
         </div>
                     
-        <script src="javascripts/monthSelector.js"></script>
-        <script src="javascripts/daySelector.js"></script>
+        <script>
+            let names = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+            active = document.querySelector(".months").firstElementChild;
+
+            let startMonth = names.findIndex(el => el == active.innerText);
+        </script>
+                
+        <script src="javascripts/selector.js"></script>
         
         <script>
-            let month = document.querySelector(".months").lastElementChild,
-                day = document.querySelector(".days").lastElementChild;
-          
-            month.classList.add("active");
-            day.classList.add("active");
-            
-            scrollToMonth(month);
-            scrollToDay(day);
+            (async () => {
+                let month = document.querySelector(".months");
+                month.lastElementChild.classList.add("active");
+                scrollTo(month.lastElementChild);
+
+                await updateDayList(currentMonthIndex);
+            })();
         </script>
     </body>
 </html>

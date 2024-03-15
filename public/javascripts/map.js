@@ -6,6 +6,9 @@ const config = {
 
 initMap();
 
+let createNewMarker = function() {};
+let removeMarkers = function () {};
+
 async function initMap() {
     await ymaps3.ready;
   
@@ -13,55 +16,65 @@ async function initMap() {
     const {YMapDefaultMarker} = await ymaps3.import('@yandex/ymaps3-markers@0.0.1');
 
     const map = new YMap(
-        document.getElementById('map'),
+        document.querySelector('.map'),
         { location: { center: config.mapCenter, zoom: config.defaultZoom } },
         [new YMapDefaultSchemeLayer({}), new YMapDefaultFeaturesLayer({})]
     )
     map.setBehaviors(["drag"]);
-
-    let parsedData = (await fetch("database").then(res => res.json()))["values"].at(-1),
-        parsedDate = new Date(parsedData["timestamp"]),
-        dateString = `${parsedDate.getDate()}/${parsedDate.getMonth() + 1}/${parsedDate.getFullYear()} ${parsedDate.getHours()}:${parsedDate.getMinutes()}:${parsedDate.getSeconds()}`;
-
-    const marker = new YMapDefaultMarker(
-        {
-            coordinates: [parsedData["lng"], parsedData["lat"]],
-            popup: 
-            {
-                content: `Загрязненность: ${parsedData["tds"]} ppm<br>Температура: ${parsedData["temp"]} C<br>Время создания: ${dateString}`,
-                position: "right" 
-            }
-        }
-    )
-
-    const controls = new YMapControls({ position: 'bottom' });
-
-    let zoomed = false, frame = 0;
-    
-    marker._container.onclick = () => {
-        if(zoomed) return;
-        zoomed = true;
-
-        changeMapPosition({ center: [parsedData["lng"], parsedData["lat"]], zoom: 18 }, { azimuth: 0, tilt: (45 * Math.PI) / 180 });
-        map.setBehaviors([]);
-
-        setTimeout(startAutoRotationCamera(), config.duration)
-    }
-    
-    marker._popup.lastChild.onclick = () => {
-        if(!zoomed) return;
+  
+    let zoomed = false, frame = 0, markerList = [];
+  
+    removeMarkers = function () {
+        markerList.forEach(m => map.removeChild(m));
+        markerList = [];
+        
         zoomed = false;
         
-        marker._togglePopup();
-        
         cancelAnimationFrame(frame);
-      
+
         changeMapPosition({ center: config.mapCenter, zoom: config.defaultZoom }, { azimuth: 0, tilt: 0 });
         map.setBehaviors(["drag"]);
     }
+  
+    createNewMarker = function(coords, data, count) {
+        const marker = new YMapDefaultMarker(
+            {
+                coordinates: [coords.lng, coords.lat],
+                popup: 
+                {
+                    content: `Количество данных на метке: ${count} шт.<br>Средняя загрязненность: ${data.tds} ppm<br>Средняя температура: ${data.temp} C<br>Время создания: ${('0' + data.createdAt.hours).slice(-2)}:${('0' + data.createdAt.minutes).slice(-2)}`,
+                    position: "right" 
+                }
+            }
+        )
 
-    map.addChild(controls);
-    map.addChild(marker);
+        marker._container.onclick = () => {
+            if(zoomed) return;
+            zoomed = true;
+
+            changeMapPosition({ center: [coords.lng, coords.lat], zoom: 18 }, { azimuth: 0, tilt: (45 * Math.PI) / 180 });
+            map.setBehaviors([]);
+
+            setTimeout(startAutoRotationCamera(), config.duration)
+        }
+
+        marker._popup.lastChild.onclick = () => {
+            if(!zoomed) return;
+            zoomed = false;
+
+            marker._togglePopup();
+
+            cancelAnimationFrame(frame);
+
+            changeMapPosition({ center: [coords.lng, coords.lat], zoom: config.defaultZoom }, { azimuth: 0, tilt: 0 });
+            map.setBehaviors(["drag"]);
+        }
+        
+        map.addChild(marker);
+        markerList.push(marker);
+        
+        changeMapPosition({ center: [coords.lng, coords.lat], zoom: config.defaultZoom }, { azimuth: 0, tilt: 0 });
+    }
 
     function startAutoRotationCamera() {
         map.update({camera: { azimuth: map.azimuth + (10 * Math.PI) / 180 / 120 }});
