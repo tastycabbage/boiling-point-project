@@ -5,7 +5,7 @@
         <link rel='stylesheet' href='/stylesheets/style.css' />
         <script src="https://api-maps.yandex.ru/v3/?apikey=6793b250-efcb-4991-a383-507344ce553d&lang=ru_RU"></script>
         <script src="javascripts/map.js"></script>
-        <script src="javascripts/dragScroll.js"></script>
+        <script src="javascripts/dragscroll.js"></script>
     </head>
     <body>
         <div class="map"></div>
@@ -39,9 +39,10 @@
                     
         <script>
             let names = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
-            active = document.querySelector(".months").firstElementChild;
+                active = document.querySelectorAll(".selector.month"),
+                monthList = [];
 
-            let startMonth = names.findIndex(el => el == active.innerText);
+            active.forEach(month => monthList.push(names.findIndex(el => el == month.innerText)));
         </script>
                 
         <script src="javascripts/selector.js"></script>
@@ -52,7 +53,7 @@
                 month.lastElementChild.classList.add("active");
                 scrollTo(month.lastElementChild);
 
-                await updateDayList(currentMonthIndex);
+                await updateDayList(monthList[currentMonthIndex]);
             })();
         </script>
     </body>

@@ -31,9 +31,6 @@ async function initMap() {
         zoomed = false;
         
         cancelAnimationFrame(frame);
-
-        changeMapPosition({ center: config.mapCenter, zoom: config.defaultZoom }, { azimuth: 0, tilt: 0 });
-        map.setBehaviors(["drag"]);
     }
   
     createNewMarker = function(coords, data, count) {
@@ -43,7 +40,7 @@ async function initMap() {
                 popup: 
                 {
                     content: `Количество данных на метке: ${count} шт.<br>Средняя загрязненность: ${data.tds} ppm<br>Средняя температура: ${data.temp} C<br>Время создания: ${('0' + data.createdAt.hours).slice(-2)}:${('0' + data.createdAt.minutes).slice(-2)}`,
-                    position: "right" 
+                    position: "right"
                 }
             }
         )

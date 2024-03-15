@@ -1007,6 +1007,22 @@
           "seconds": 27,
           "milliseconds": 163
         }
+      },
+      {
+        "tds": "6908",
+        "temp": "67.64",
+        "timestamp": 1778529718995,
+        "lat": "47.251492",
+        "lng": "38.967100",
+        "createdAt": {
+          "day": 11,
+          "month": 4,
+          "year": 2026,
+          "hours": 23,
+          "minutes": 1,
+          "seconds": 58,
+          "milliseconds": 893
+        }
       }
     ]
   }

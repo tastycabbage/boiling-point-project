@@ -9,25 +9,25 @@ const prevDayButton = document.querySelector(".nav-button.day.prev");
 const nextDayButton = document.querySelector(".nav-button.day.next");
 const navDayActive = document.querySelector(".selector.day.active");
 
-let currentMonthIndex = startMonth + (navMonths.length - 1), currentDayIndex = 0;
+let currentMonthIndex = monthList.length - 1, currentDayIndex = 0;
 
 prevMonthButton.addEventListener("click", async () => {
-    if (currentMonthIndex > startMonth) {
+    if (currentMonthIndex > 0) {
         currentMonthIndex--;
         
         selectButton(navMonths, currentMonthIndex);
-        await updateDayList(currentMonthIndex);
+        navMonths[currentMonthIndex].click();
         
         scrollTo(navMonths[currentMonthIndex]);
     }
 });
 
 nextMonthButton.addEventListener("click", async () => {
-    if (currentMonthIndex < navMonths.length - 1) {
+    if (currentMonthIndex < monthList.length - 1) {
         currentMonthIndex++;
         
         selectButton(navMonths, currentMonthIndex);
-        await updateDayList(currentMonthIndex);
+        navMonths[currentMonthIndex].click();
         
         scrollTo(navMonths[currentMonthIndex]);
     }
@@ -35,10 +35,10 @@ nextMonthButton.addEventListener("click", async () => {
 
 navMonths.forEach((button, index) => {
     button.addEventListener("click", async () => {
-        currentMonthIndex = startMonth + index;
+        currentMonthIndex = index;
         
-        selectButton(navMonths, currentMonthIndex - startMonth);
-        await updateDayList(currentMonthIndex);
+        selectButton(navMonths, currentMonthIndex);
+        await updateDayList(monthList[currentMonthIndex]);
 
         scrollTo(button);
     });
@@ -53,12 +53,14 @@ async function updateDayList(num) {
         days.removeChild(days.firstChild);
     }
     
-    const uniqueDays = new Set();
-    const uniqueMonths = new Set();
+    let uniqueDays = new Set();
+    let uniqueMonths = new Set();
                         
     data.forEach(val => uniqueMonths.add(val.createdAt.month))
     
     data.filter(el => el.createdAt.month == num).forEach(val => uniqueDays.add(val.createdAt.day));
+  
+    uniqueDays = Array.from(uniqueDays).reverse();
     
     uniqueDays.forEach(day => {
         let dayButton = document.createElement("div");
@@ -102,7 +104,9 @@ async function updateDayList(num) {
 prevDayButton.addEventListener("click", () => {
     if (currentDayIndex > 0) {
         currentDayIndex--;
+      
         selectButton(navDays, currentDayIndex);
+        navDays[currentDayIndex].click();
 
         scrollTo(navDays[currentDayIndex]);
     }
@@ -111,7 +115,9 @@ prevDayButton.addEventListener("click", () => {
 nextDayButton.addEventListener("click", () => {
     if (currentDayIndex < navDays.length - 1) {
         currentDayIndex++;
+        
         selectButton(navDays, currentDayIndex);
+        navDays[currentDayIndex].click();
 
         scrollTo(navDays[currentDayIndex]);
     }
