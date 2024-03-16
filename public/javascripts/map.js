@@ -1,7 +1,10 @@
+const isMobile = window.matchMedia("(any-pointer: coarse)").matches;
+
 const config = {
     mapCenter: [38.936694, 47.208736],
     duration: 1000,
-    defaultZoom: 14
+    defaultZoom: isMobile? 18 : 14,
+    clickZoom: isMobile? 22 : 18
 }
 
 initMap();
@@ -40,7 +43,7 @@ async function initMap() {
                 popup: 
                 {
                     content: `Количество данных на метке: ${count} шт.<br>Средняя загрязненность: ${data.tds} ppm<br>Средняя температура: ${data.temp} C<br>Время создания: ${('0' + data.createdAt.hours).slice(-2)}:${('0' + data.createdAt.minutes).slice(-2)}`,
-                    position: "right"
+                    position: isMobile ? "top" : "right"
                 }
             }
         )
@@ -49,7 +52,7 @@ async function initMap() {
             if(zoomed) return;
             zoomed = true;
 
-            changeMapPosition({ center: [coords.lng, coords.lat], zoom: 18 }, { azimuth: 0, tilt: (45 * Math.PI) / 180 });
+            changeMapPosition({ center: [coords.lng, coords.lat], zoom: config.clickZoom }, { azimuth: 0, tilt: (45 * Math.PI) / 180 });
             map.setBehaviors([]);
 
             setTimeout(startAutoRotationCamera(), config.duration)
